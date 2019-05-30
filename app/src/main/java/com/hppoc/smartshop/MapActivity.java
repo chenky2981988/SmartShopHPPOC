@@ -42,111 +42,111 @@ public class MapActivity extends AppCompatActivity {
 
     private void loadMapFragment() {
 
-        MapFragment.Builder builder = new MapFragment.Builder()
-                .setMapKey(EditorKey.forMap(BuildConfig.ArubaMapKey, BuildConfig.ArubaAppKey));
-        MapOptions mapOptions = MapOptions.getDefaultOptions();
-        // Turn off the overview button (only shown if there is an overview map for the location)
-        mapOptions.HIDE_OVERVIEW_BUTTON = true;
-        builder.setMapOptions(mapOptions);
-        // example: how to set placemark markers text size
-                /*
-                    MapOptions mapOptions = ((MapFragment) fragment).getMapOptions();
-                    mapOptions.setTextSize(14);
-                    builder.setMapOptions(mapOptions);
-                */
-        // example: how to start directions programmatically
-
-        final MapFragment mapFragment = builder.build();
-        mapFragment.setMapEventListener(new MapView.MapEventListener() {
-
-            @Override
-            public void onMapLoadFinish() {
-
-            }
-
-            @Override
-            public void onMapLoadStart() {
-
-            }
-
-            @Override
-            public void onPlacemarksLoadFinish() {
-                        /*for (Placemark placemark : mapFragment.getMapView().getPlacemarks()) {
-                            if ("APPLE".equals(placemark.getName())) {
-                                mapFragment.startDirections(DirectionsDestination.forPlacemarkKey(placemark.getKey()));
-                            }
-                        }*/
-            }
-
-            @Override
-            public void onMapRenderFinish() {
-
-            }
-
-            @Override
-            public void onMapLoadFail(Throwable tr) {
-                if (mapFragment.isAdded() && mapFragment.getActivity() != null) {
-                    String message = getString(com.arubanetworks.meridian.R.string.mr_error_invalid_map);
-                    if (tr != null) {
-                        if (tr instanceof VolleyError && ((VolleyError) tr).networkResponse != null && ((VolleyError) tr).networkResponse.statusCode == 401) {
-                            message = "HTTP 401 Error: Please verify the Editor token.";
-                        } else if (!Strings.isNullOrEmpty(tr.getLocalizedMessage())) {
-                            message = tr.getLocalizedMessage();
-                        }
-                    }
-                    new AlertDialog.Builder(mapFragment.getActivity())
-                            .setTitle(getString(com.arubanetworks.meridian.R.string.mr_error_title))
-                            .setMessage(message)
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .setPositiveButton(com.arubanetworks.meridian.R.string.mr_ok, null)
-                            .show();
-                }
-            }
-
-            @Override
-            public void onMapTransformChange(Matrix transform) {
-
-            }
-
-            @Override
-            public void onLocationUpdated(MeridianLocation location) {
-
-            }
-
-            @Override
-            public void onOrientationUpdated(MeridianOrientation orientation) {
-
-            }
-
-            @Override
-            public boolean onLocationButtonClick() {
-                // example of how to override the behavior of the location button
-                final MapView mapView = mapFragment.getMapView();
-                MeridianLocation location = mapView.getUserLocation();
-                if (location != null) {
-                    mapView.updateForLocation(location);
-
-                } else {
-                    LocationRequest.requestCurrentLocation(getApplicationContext(), EditorKey.forApp(BuildConfig.ArubaAppKey), new LocationRequest.LocationRequestListener() {
-                        @Override
-                        public void onResult(MeridianLocation location) {
-                            mapView.updateForLocation(location);
-                        }
-
-                        @Override
-                        public void onError(LocationRequest.ErrorType location) {
-                            // handle the error
-                        }
-                    });
-                }
-                return true;
-            }
-        });
+//        MapFragment.Builder builder = new MapFragment.Builder()
+//                .setMapKey(EditorKey.forMap(BuildConfig.ArubaMapKey, BuildConfig.ArubaAppKey));
+//        MapOptions mapOptions = MapOptions.getDefaultOptions();
+//        // Turn off the overview button (only shown if there is an overview map for the location)
+//        mapOptions.HIDE_OVERVIEW_BUTTON = true;
+//        builder.setMapOptions(mapOptions);
+//        // example: how to set placemark markers text size
+//                /*
+//                    MapOptions mapOptions = ((MapFragment) fragment).getMapOptions();
+//                    mapOptions.setTextSize(14);
+//                    builder.setMapOptions(mapOptions);
+//                */
+//        // example: how to start directions programmatically
+//
+//        final MapFragment mapFragment = builder.build();
+//        mapFragment.setMapEventListener(new MapView.MapEventListener() {
+//
+//            @Override
+//            public void onMapLoadFinish() {
+//
+//            }
+//
+//            @Override
+//            public void onMapLoadStart() {
+//
+//            }
+//
+//            @Override
+//            public void onPlacemarksLoadFinish() {
+//                        /*for (Placemark placemark : mapFragment.getMapView().getPlacemarks()) {
+//                            if ("APPLE".equals(placemark.getName())) {
+//                                mapFragment.startDirections(DirectionsDestination.forPlacemarkKey(placemark.getKey()));
+//                            }
+//                        }*/
+//            }
+//
+//            @Override
+//            public void onMapRenderFinish() {
+//
+//            }
+//
+//            @Override
+//            public void onMapLoadFail(Throwable tr) {
+//                if (mapFragment.isAdded() && mapFragment.getActivity() != null) {
+//                    String message = getString(com.arubanetworks.meridian.R.string.mr_error_invalid_map);
+//                    if (tr != null) {
+//                        if (tr instanceof VolleyError && ((VolleyError) tr).networkResponse != null && ((VolleyError) tr).networkResponse.statusCode == 401) {
+//                            message = "HTTP 401 Error: Please verify the Editor token.";
+//                        } else if (!Strings.isNullOrEmpty(tr.getLocalizedMessage())) {
+//                            message = tr.getLocalizedMessage();
+//                        }
+//                    }
+//                    new AlertDialog.Builder(mapFragment.getActivity())
+//                            .setTitle(getString(com.arubanetworks.meridian.R.string.mr_error_title))
+//                            .setMessage(message)
+//                            .setIcon(android.R.drawable.ic_dialog_alert)
+//                            .setPositiveButton(com.arubanetworks.meridian.R.string.mr_ok, null)
+//                            .show();
+//                }
+//            }
+//
+//            @Override
+//            public void onMapTransformChange(Matrix transform) {
+//
+//            }
+//
+//            @Override
+//            public void onLocationUpdated(MeridianLocation location) {
+//
+//            }
+//
+//            @Override
+//            public void onOrientationUpdated(MeridianOrientation orientation) {
+//
+//            }
+//
+//            @Override
+//            public boolean onLocationButtonClick() {
+//                // example of how to override the behavior of the location button
+//                final MapView mapView = mapFragment.getMapView();
+//                MeridianLocation location = mapView.getUserLocation();
+//                if (location != null) {
+//                    mapView.updateForLocation(location);
+//
+//                } else {
+//                    LocationRequest.requestCurrentLocation(getApplicationContext(), EditorKey.forApp(BuildConfig.ArubaAppKey), new LocationRequest.LocationRequestListener() {
+//                        @Override
+//                        public void onResult(MeridianLocation location) {
+//                            mapView.updateForLocation(location);
+//                        }
+//
+//                        @Override
+//                        public void onError(LocationRequest.ErrorType location) {
+//                            // handle the error
+//                        }
+//                    });
+//                }
+//                return true;
+//            }
+//        });
 
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.container_map, new MapViewFragment())
-                .addToBackStack(null)
+                //.addToBackStack(null)
                 .commit();
     }
 
