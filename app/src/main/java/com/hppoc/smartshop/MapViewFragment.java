@@ -5,16 +5,25 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.appcompat.app.AlertDialog;
+
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.arubanetworks.meridian.editor.EditorKey;
+import com.arubanetworks.meridian.editor.Placemark;
 import com.arubanetworks.meridian.location.MeridianLocation;
 import com.arubanetworks.meridian.location.MeridianOrientation;
+import com.arubanetworks.meridian.maps.MapFragment;
 import com.arubanetworks.meridian.maps.MapOptions;
 import com.arubanetworks.meridian.maps.MapView;
 import com.arubanetworks.meridian.maps.Marker;
+import com.arubanetworks.meridian.maps.PlacemarkMarker;
+import com.arubanetworks.meridian.maps.directions.DirectionsDestination;
+import com.arubanetworks.meridian.maps.directions.DirectionsSource;
+
+import java.util.List;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -51,6 +60,10 @@ public class MapViewFragment extends Fragment implements MapView.DirectionsEvent
         MapOptions mapOptions = mapView.getOptions();
         mapOptions.HIDE_MAP_LABEL = true;
         mapOptions.HIDE_DIRECTIONS_CONTROLS = true;
+//        mapOptions.HIDE_OVERVIEW_BUTTON = true;
+        mapOptions.HIDE_ACCESSIBILITY_BUTTON = true;
+        mapOptions.HIDE_LEVELS_CONTROL = true;
+//        mapOptions.HIDE_LOCATION_BUTTON = true;
         mapView.setOptions(mapOptions);
 
         // If you want to load a map other than the default one
@@ -68,7 +81,6 @@ public class MapViewFragment extends Fragment implements MapView.DirectionsEvent
         // lm.setName("Current Location Label");
         // lm.setDetails("Details");
         // // lm.setShowsCallout(false);
-
         return rootView;
     }
 
@@ -100,10 +112,12 @@ public class MapViewFragment extends Fragment implements MapView.DirectionsEvent
 
     @Override
     public void onMapLoadFinish() {
+
     }
 
     @Override
     public void onPlacemarksLoadFinish() {
+
     }
 
     @Override
@@ -112,6 +126,7 @@ public class MapViewFragment extends Fragment implements MapView.DirectionsEvent
 
     @Override
     public void onMapRenderFinish() {
+        Log.d("TAG","App Key : [" +mapView.getAppKey().toString()+ "] Map Key : [" + mapView.getMapKey().toString()+"]");
     }
 
     @Override
@@ -128,6 +143,37 @@ public class MapViewFragment extends Fragment implements MapView.DirectionsEvent
 
     @Override
     public boolean onLocationButtonClick() {
+        List<Placemark> placemarkList = mapView.getPlacemarks();
+        DirectionsDestination directionsDestination;
+        DirectionsSource directionsSource;
+
+        if(placemarkList.size() >= 2){
+            directionsSource = DirectionsSource.forPlacemarkKey(placemarkList.get(0).getKey());
+            directionsDestination = DirectionsDestination.forPlacemarkKey(placemarkList.get(1).getKey());
+
+            MapOptions mapOptions = mapView.getOptions();
+            mapOptions.HIDE_MAP_LABEL = true;
+            mapOptions.HIDE_DIRECTIONS_CONTROLS = true;
+            mapOptions.HIDE_OVERVIEW_BUTTON = true;
+            mapOptions.HIDE_ACCESSIBILITY_BUTTON = true;
+            mapOptions.HIDE_LEVELS_CONTROL = true;
+            mapOptions.HIDE_LOCATION_BUTTON = true;
+
+            MapFragment mapDirFragment = new MapFragment.Builder()
+                    .setAppKey(mapView.getAppKey())
+                    .setMapKey(mapView.getMapKey())
+                    .setSource(directionsSource)
+                    .setMapOptions(mapOptions)
+                    .setDestination(directionsDestination)
+                    .build();
+
+            getActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.container_map, mapDirFragment)
+                    //.addToBackStack(null)
+                    .commit();
+
+        }
         return false;
     }
 
