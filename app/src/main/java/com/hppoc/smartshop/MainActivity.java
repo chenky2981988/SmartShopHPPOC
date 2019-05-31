@@ -16,10 +16,17 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.api.gax.core.FixedCredentialsProvider;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.auth.oauth2.ServiceAccountCredentials;
 import com.google.cloud.dialogflow.v2beta1.DetectIntentResponse;
+import com.google.cloud.dialogflow.v2beta1.QueryInput;
 import com.google.cloud.dialogflow.v2beta1.SessionName;
 import com.google.cloud.dialogflow.v2beta1.SessionsClient;
+import com.google.cloud.dialogflow.v2beta1.SessionsSettings;
+import com.google.cloud.dialogflow.v2beta1.TextInput;
 
+import java.io.InputStream;
 import java.util.UUID;
 
 import ai.api.AIServiceContext;
@@ -88,10 +95,10 @@ public class MainActivity extends AppCompatActivity {
 
 
         // Android client
-        initChatbot();
+        //initChatbot();
 
         // Java V2
-        //  initV2Chatbot();
+          initV2Chatbot();
     }
 
     private void initChatbot() {
@@ -103,20 +110,24 @@ public class MainActivity extends AppCompatActivity {
         aiRequest = new AIRequest();
     }
 
-//    private void initV2Chatbot() {
-//        try {
-//            InputStream stream = getResources().openRawResource(R.raw.test_agent_credentials);
-//            GoogleCredentials credentials = GoogleCredentials.fromStream(stream);
-//            String projectId = ((ServiceAccountCredentials)credentials).getProjectId();
-//
-//            SessionsSettings.Builder settingsBuilder = SessionsSettings.newBuilder();
-//            SessionsSettings sessionsSettings = settingsBuilder.setCredentialsProvider(FixedCredentialsProvider.create(credentials)).build();
-//            sessionsClient = SessionsClient.create(sessionsSettings);
-//            session = SessionName.of(projectId, uuid);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
+    private void initV2Chatbot() {
+        try {
+            InputStream stream = getResources().openRawResource(R.raw.test_agent_credentials);
+            GoogleCredentials credentials = GoogleCredentials.fromStream(stream);
+            String projectId = ((ServiceAccountCredentials)credentials).getProjectId();
+
+            SessionsSettings.Builder settingsBuilder = SessionsSettings.newBuilder();
+            SessionsSettings sessionsSettings = settingsBuilder.setCredentialsProvider(FixedCredentialsProvider.create(credentials)).build();
+            sessionsClient = SessionsClient.create(sessionsSettings);
+            session = SessionName.of(projectId, uuid);
+            Log.d("TAG","Random UUID : " + uuid);
+            Log.d("TAG","Project : " + session.getProject());
+            Log.d("TAG","Session : " + session.getSession());
+            Log.d("TAG","Session Str : " + session.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     private void sendMessage(View view) {
         String msg = queryEditText.getText().toString();
@@ -125,14 +136,14 @@ public class MainActivity extends AppCompatActivity {
         } else {
             showTextView(msg, USER);
             queryEditText.setText("");
-            // Android client
-            aiRequest.setQuery(msg);
-            RequestTask requestTask = new RequestTask(MainActivity.this, aiDataService, customAIServiceContext);
-            requestTask.execute(aiRequest);
+//            // Android client
+//            aiRequest.setQuery(msg);
+//            RequestTask requestTask = new RequestTask(MainActivity.this, aiDataService, customAIServiceContext);
+//            requestTask.execute(aiRequest);
 
             // Java V2
-//            QueryInput queryInput = QueryInput.newBuilder().setText(TextInput.newBuilder().setText(msg).setLanguageCode("en-US")).build();
-//            new RequestJavaV2Task(MainActivity.this, session, sessionsClient, queryInput).execute();
+            QueryInput queryInput = QueryInput.newBuilder().setText(TextInput.newBuilder().setText(msg).setLanguageCode("en-US")).build();
+            new RequestJavaV2Task(MainActivity.this, session, sessionsClient, queryInput).execute();
         }
     }
 

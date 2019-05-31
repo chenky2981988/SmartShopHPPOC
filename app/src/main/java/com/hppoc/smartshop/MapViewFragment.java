@@ -1,6 +1,7 @@
 package com.hppoc.smartshop;
 
 import android.graphics.Matrix;
+import android.graphics.PointF;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -148,9 +149,14 @@ public class MapViewFragment extends Fragment implements MapView.DirectionsEvent
         DirectionsSource directionsSource;
 
         if(placemarkList.size() >= 2){
-            directionsSource = DirectionsSource.forPlacemarkKey(placemarkList.get(0).getKey());
-            directionsDestination = DirectionsDestination.forPlacemarkKey(placemarkList.get(1).getKey());
+            //directionsSource = DirectionsSource.forPlacemarkKey(placemarkList.get(0).getKey());
 
+            PointF pointF = new PointF();
+            pointF.set(1150.0f,3000.0f);
+            directionsSource = DirectionsSource.forMapPoint(EditorKey.forMap(BuildConfig.ArubaMapKey, BuildConfig.ArubaAppKey),pointF);
+            Log.d("TAG","PlaceMark Key : " + placemarkList.get(0).getKey());
+            directionsDestination = DirectionsDestination.forPlacemarkKey(placemarkList.get(0).getKey());
+            //directionsDestination = DirectionsDestination.
             MapOptions mapOptions = mapView.getOptions();
             mapOptions.HIDE_MAP_LABEL = true;
             mapOptions.HIDE_DIRECTIONS_CONTROLS = true;
@@ -174,7 +180,7 @@ public class MapViewFragment extends Fragment implements MapView.DirectionsEvent
                     .commit();
 
         }
-        return false;
+        return true;
     }
 
     //
