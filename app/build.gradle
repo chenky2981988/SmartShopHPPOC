@@ -15,20 +15,20 @@ android {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            buildConfigField "String", "ClientAccessToken", '"2998c117ea0c4bb89b022f7604516582"'
+            buildConfigField "String", "ClientAccessToken", '"05b50371615c4284b09d2feef2889fd8"'
             buildConfigField "String", "ArubaAppKey", '"5737079267393536"'
             buildConfigField "String", "ArubaMapKey", '"5764017373052928"'
             buildConfigField "String", "ArubaApplicationToken", '"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0IjoxNTU4NjgyMzEzLCJ2YWx1ZSI6IjFmYjdiMWIwMDg3MTRmMTEwZWYyNDMzODI2OGI2M2NmNDZiYzYxYTAifQ.PSTdrdOalkVA4dHr4EOTG8qb9RljxzpbIx7RT9o8Zfg"'
-            resValue 'string', "ClientAccessToken", '"2998c117ea0c4bb89b022f7604516582"'
+            resValue 'string', "ClientAccessToken", '"05b50371615c4284b09d2feef2889fd8"'
         }
         debug {
             minifyEnabled false
             //proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            buildConfigField "String", "ClientAccessToken", '"2998c117ea0c4bb89b022f7604516582"'
+            buildConfigField "String", "ClientAccessToken", '"05b50371615c4284b09d2feef2889fd8"'
             buildConfigField "String", "ArubaAppKey", '"5737079267393536"' //5737079267393536
             buildConfigField "String", "ArubaMapKey", '"5764017373052928"' //5676982813589504
             buildConfigField "String", "ArubaApplicationToken", '"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0IjoxNTU4NjgyMzEzLCJ2YWx1ZSI6IjFmYjdiMWIwMDg3MTRmMTEwZWYyNDMzODI2OGI2M2NmNDZiYzYxYTAifQ.PSTdrdOalkVA4dHr4EOTG8qb9RljxzpbIx7RT9o8Zfg"'
-            resValue 'string', "ClientAccessToken", '"2998c117ea0c4bb89b022f7604516582"'
+            resValue 'string', "ClientAccessToken", '"05b50371615c4284b09d2feef2889fd8"'
         }
     }
 
@@ -79,4 +79,6 @@ dependencies {
     implementation('io.socket:socket.io-client:0.9.0') { exclude group: 'org.json', module: 'json' }
     implementation 'com.arubanetworks.meridian:meridian:5.3.0@aar'
     implementation 'com.android.support:multidex:1.0.3'
+    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'com.squareup.picasso:picasso:2.71828'
 }

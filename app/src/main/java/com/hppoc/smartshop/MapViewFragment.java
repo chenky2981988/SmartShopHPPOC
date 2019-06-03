@@ -3,10 +3,6 @@ package com.hppoc.smartshop;
 import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.appcompat.app.AlertDialog;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,16 +16,22 @@ import com.arubanetworks.meridian.maps.MapFragment;
 import com.arubanetworks.meridian.maps.MapOptions;
 import com.arubanetworks.meridian.maps.MapView;
 import com.arubanetworks.meridian.maps.Marker;
-import com.arubanetworks.meridian.maps.PlacemarkMarker;
 import com.arubanetworks.meridian.maps.directions.DirectionsDestination;
 import com.arubanetworks.meridian.maps.directions.DirectionsSource;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
+
 /**
  * A placeholder fragment containing a simple view.
  */
 public class MapViewFragment extends Fragment implements MapView.DirectionsEventListener, MapView.MapEventListener {
+
+    String eventKey, itemKey;
 
     public MapViewFragment() {
     }
@@ -39,6 +41,13 @@ public class MapViewFragment extends Fragment implements MapView.DirectionsEvent
      */
 
     private MapView mapView;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        eventKey = getArguments().getString("EVENT", "SHOW_MAP");
+        itemKey = getArguments().getString("ITEM_KEY", "");
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -60,7 +69,7 @@ public class MapViewFragment extends Fragment implements MapView.DirectionsEvent
         // Set map options if desired
         MapOptions mapOptions = mapView.getOptions();
         mapOptions.HIDE_MAP_LABEL = true;
-       // mapOptions.HIDE_DIRECTIONS_CONTROLS = true;
+        // mapOptions.HIDE_DIRECTIONS_CONTROLS = true;
 //        mapOptions.HIDE_OVERVIEW_BUTTON = true;
         //mapOptions.HIDE_ACCESSIBILITY_BUTTON = true;
         mapOptions.HIDE_LEVELS_CONTROL = true;
@@ -83,6 +92,12 @@ public class MapViewFragment extends Fragment implements MapView.DirectionsEvent
         // lm.setDetails("Details");
         // // lm.setShowsCallout(false);
         return rootView;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
     }
 
     @Override
@@ -118,7 +133,9 @@ public class MapViewFragment extends Fragment implements MapView.DirectionsEvent
 
     @Override
     public void onPlacemarksLoadFinish() {
-
+        if (eventKey.equalsIgnoreCase("NAVIGATE")) {
+            showDirection();
+        }
     }
 
     @Override
@@ -127,7 +144,7 @@ public class MapViewFragment extends Fragment implements MapView.DirectionsEvent
 
     @Override
     public void onMapRenderFinish() {
-        Log.d("TAG","App Key : [" +mapView.getAppKey().toString()+ "] Map Key : [" + mapView.getMapKey().toString()+"]");
+        Log.d("TAG", "App Key : [" + mapView.getAppKey().toString() + "] Map Key : [" + mapView.getMapKey().toString() + "]");
     }
 
     @Override
@@ -144,42 +161,43 @@ public class MapViewFragment extends Fragment implements MapView.DirectionsEvent
 
     @Override
     public boolean onLocationButtonClick() {
-        List<Placemark> placemarkList = mapView.getPlacemarks();
-        DirectionsDestination directionsDestination;
-        DirectionsSource directionsSource;
-
-        if(placemarkList.size() >= 2){
-            //directionsSource = DirectionsSource.forPlacemarkKey(placemarkList.get(0).getKey());
-
-            PointF pointF = new PointF();
-            pointF.set(1150.0f,3000.0f);
-            directionsSource = DirectionsSource.forMapPoint(EditorKey.forMap(BuildConfig.ArubaMapKey, BuildConfig.ArubaAppKey),pointF);
-            Log.d("TAG","PlaceMark Key : " + placemarkList.get(0).getKey());
-            directionsDestination = DirectionsDestination.forPlacemarkKey(placemarkList.get(0).getKey());
-            //directionsDestination = DirectionsDestination.
-            MapOptions mapOptions = mapView.getOptions();
-            //mapOptions.HIDE_MAP_LABEL = true;
-            //mapOptions.HIDE_DIRECTIONS_CONTROLS = true;
-           // mapOptions.HIDE_OVERVIEW_BUTTON = true;
-            mapOptions.HIDE_ACCESSIBILITY_BUTTON = true;
-           // mapOptions.HIDE_LEVELS_CONTROL = true;
-            mapOptions.HIDE_LOCATION_BUTTON = true;
-
-            MapFragment mapDirFragment = new MapFragment.Builder()
-                    .setAppKey(mapView.getAppKey())
-                    .setMapKey(mapView.getMapKey())
-                    .setSource(directionsSource)
-                    .setMapOptions(mapOptions)
-                    .setDestination(directionsDestination)
-                    .build();
-
-            getActivity().getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.container_map, mapDirFragment)
-                    //.addToBackStack(null)
-                    .commit();
-
-        }
+//        List<Placemark> placemarkList = mapView.getPlacemarks();
+//        DirectionsDestination directionsDestination;
+//        DirectionsSource directionsSource;
+//
+//        if(placemarkList.size() >= 2){
+//            //directionsSource = DirectionsSource.forPlacemarkKey(placemarkList.get(0).getKey());
+//
+//            PointF pointF = new PointF();
+//            pointF.set(1150.0f,3000.0f);
+//            directionsSource = DirectionsSource.forMapPoint(EditorKey.forMap(BuildConfig.ArubaMapKey, BuildConfig.ArubaAppKey),pointF);
+//            Log.d("TAG","PlaceMark Key : " + placemarkList.get(0).getKey());
+//            directionsDestination = DirectionsDestination.forPlacemarkKey(placemarkList.get(0).getKey());
+//            //directionsDestination = DirectionsDestination.
+//            MapOptions mapOptions = mapView.getOptions();
+//            //mapOptions.HIDE_MAP_LABEL = true;
+//            //mapOptions.HIDE_DIRECTIONS_CONTROLS = true;
+//           // mapOptions.HIDE_OVERVIEW_BUTTON = true;
+//            mapOptions.HIDE_ACCESSIBILITY_BUTTON = true;
+//           // mapOptions.HIDE_LEVELS_CONTROL = true;
+//            mapOptions.HIDE_LOCATION_BUTTON = true;
+//
+//            MapFragment mapDirFragment = new MapFragment.Builder()
+//                    .setAppKey(mapView.getAppKey())
+//                    .setMapKey(mapView.getMapKey())
+//                    .setSource(directionsSource)
+//                    .setMapOptions(mapOptions)
+//                    .setDestination(directionsDestination)
+//                    .build();
+//
+//            getActivity().getSupportFragmentManager()
+//                    .beginTransaction()
+//                    .replace(R.id.container_map, mapDirFragment)
+//                    //.addToBackStack(null)
+//                    .commit();
+//
+//        }
+        showDirection();
         return true;
     }
 
@@ -223,5 +241,51 @@ public class MapViewFragment extends Fragment implements MapView.DirectionsEvent
 
     @Override
     public void onUseAccessiblePathsChange() {
+    }
+
+    private void showDirection() {
+        List<Placemark> placemarkList = mapView.getPlacemarks();
+        DirectionsDestination directionsDestination;
+        DirectionsSource directionsSource;
+
+        if (placemarkList.size() >= 2) {
+            //directionsSource = DirectionsSource.forPlacemarkKey(placemarkList.get(0).getKey());
+            for (int i = 0; i < placemarkList.size(); i++) {
+                Placemark placemark = placemarkList.get(i);
+                Log.d("TAG","placemark Name : " + placemark.getName());
+                if (placemark.getName().toLowerCase().contains(itemKey.toLowerCase())) {
+                    PointF pointF = new PointF();
+                    pointF.set(1150.0f, 3000.0f);
+                    directionsSource = DirectionsSource.forMapPoint(EditorKey.forMap(BuildConfig.ArubaMapKey, BuildConfig.ArubaAppKey), pointF);
+                    Log.d("TAG", "PlaceMark Key : " + placemark.getKey());
+                    directionsDestination = DirectionsDestination.forPlacemarkKey(placemark.getKey());
+                    //directionsDestination = DirectionsDestination.
+                    MapOptions mapOptions = mapView.getOptions();
+                    //mapOptions.HIDE_MAP_LABEL = true;
+                    //mapOptions.HIDE_DIRECTIONS_CONTROLS = true;
+                    // mapOptions.HIDE_OVERVIEW_BUTTON = true;
+                    mapOptions.HIDE_ACCESSIBILITY_BUTTON = true;
+                    // mapOptions.HIDE_LEVELS_CONTROL = true;
+                    mapOptions.HIDE_LOCATION_BUTTON = true;
+
+                    MapFragment mapDirFragment = new MapFragment.Builder()
+                            .setAppKey(mapView.getAppKey())
+                            .setMapKey(mapView.getMapKey())
+                            .setSource(directionsSource)
+                            .setMapOptions(mapOptions)
+                            .setDestination(directionsDestination)
+                            .build();
+
+                    getActivity().getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.container_map, mapDirFragment)
+                            //.addToBackStack(null)
+                            .commit();
+                    break;
+                }
+            }
+
+
+        }
     }
 }

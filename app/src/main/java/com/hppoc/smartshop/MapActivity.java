@@ -2,29 +2,17 @@ package com.hppoc.smartshop;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.graphics.Matrix;
 import android.os.Bundle;
 import android.os.Handler;
 
-import com.android.volley.VolleyError;
-import com.arubanetworks.meridian.campaigns.CampaignsService;
-import com.arubanetworks.meridian.editor.EditorKey;
-import com.arubanetworks.meridian.internal.util.Strings;
-import com.arubanetworks.meridian.location.LocationRequest;
-import com.arubanetworks.meridian.location.MeridianLocation;
-import com.arubanetworks.meridian.location.MeridianOrientation;
-import com.arubanetworks.meridian.maps.MapFragment;
-import com.arubanetworks.meridian.maps.MapOptions;
-import com.arubanetworks.meridian.maps.MapView;
-
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 public class MapActivity extends AppCompatActivity {
+
+    String itemKey = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,14 +21,20 @@ public class MapActivity extends AppCompatActivity {
 //        Toolbar toolbar = findViewById(R.id.toolbar);
 //        setSupportActionBar(toolbar);
 
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)  != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-        }else{
-            loadMapFragment();
+        } else {
+            itemKey = getIntent().getExtras().getString("ITEM_KEY");
+            if (getIntent().getExtras().getString("EVENT").equalsIgnoreCase("SHOW_MAP")) {
+                loadMapFragment("SHOW_MAP");
+            } else if (getIntent().getExtras().getString("EVENT").equalsIgnoreCase("NAVIGATE")) {
+                loadMapFragment("NAVIGATE");
+            }
+
         }
     }
 
-    private void loadMapFragment() {
+    private void loadMapFragment(String key) {
 
 //        MapFragment.Builder builder = new MapFragment.Builder()
 //                .setMapKey(EditorKey.forMap(BuildConfig.ArubaMapKey, BuildConfig.ArubaAppKey));
@@ -142,10 +136,14 @@ public class MapActivity extends AppCompatActivity {
 //                return true;
 //            }
 //        });
-
+        MapViewFragment mapViewFragment = new MapViewFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("EVENT", key);
+        bundle.putString("ITEM_KEY", itemKey);
+        mapViewFragment.setArguments(bundle);
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.container_map, new MapViewFragment())
+                .replace(R.id.container_map, mapViewFragment)
                 //.addToBackStack(null)
                 .commit();
     }
@@ -161,8 +159,13 @@ public class MapActivity extends AppCompatActivity {
             public void run() {
 //                CampaignsService.startMonitoring(MainActivity.this, Application.APP_KEY);
 ////                selectItem(0);
-                loadMapFragment();
+                //loadMapFragment();
+                if (getIntent().getExtras().getString("EVENT").equalsIgnoreCase("SHOW_MAP")) {
+                    loadMapFragment("SHOW_MAP");
+                } else if (getIntent().getExtras().getString("EVENT").equalsIgnoreCase("NAVIGATE")) {
+                    loadMapFragment("NAVIGATE");
+                }
             }
-        },1000);
+        }, 1000);
     }
 }
