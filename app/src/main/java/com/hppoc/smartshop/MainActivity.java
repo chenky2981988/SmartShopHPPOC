@@ -2,6 +2,9 @@ package com.hppoc.smartshop;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.speech.RecognizerIntent;
+import android.speech.tts.TextToSpeech;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -30,6 +33,8 @@ import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
 import java.io.InputStream;
+import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 import ai.api.AIServiceContext;
@@ -39,9 +44,10 @@ import ai.api.android.AIDataService;
 import ai.api.model.AIRequest;
 import ai.api.model.AIResponse;
 import ai.api.model.ResponseMessage;
+import ai.api.ui.AIButton;
 import androidx.appcompat.app.AppCompatActivity;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements TextToSpeech.OnInitListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int USER = 10001;
@@ -53,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout chatLayout;
     private EditText queryEditText;
     private ImageView mapButton;
+    private AIButton voiceButton;
 
     // Android client
     private AIRequest aiRequest;
@@ -63,6 +70,9 @@ public class MainActivity extends AppCompatActivity {
     private SessionsClient sessionsClient;
     private SessionName session;
     private String itemKey = "";
+
+    private static final int SPEECH_REQUEST_CODE = 0;
+    private TextToSpeech textToSpeech;
 
 
     @Override
@@ -78,6 +88,16 @@ public class MainActivity extends AppCompatActivity {
 
         ImageView sendBtn = findViewById(R.id.sendBtn);
         sendBtn.setOnClickListener(this::sendMessage);
+
+        voiceButton = (AIButton) findViewById(R.id.voiceBtn);
+        voiceButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                displaySpeechRecognizer();
+            }
+        });
+
+        textToSpeech = new TextToSpeech(this, this);
 
         queryEditText = findViewById(R.id.queryEditText);
         queryEditText.setOnKeyListener((view, keyCode, event) -> {
@@ -140,20 +160,21 @@ public class MainActivity extends AppCompatActivity {
 
     private void sendMessage(View view) {
         String msg = queryEditText.getText().toString();
-        if (msg.trim().isEmpty()) {
-            Toast.makeText(MainActivity.this, "Please enter your query!", Toast.LENGTH_LONG).show();
-        } else {
-            showTextView(msg, null, USER);
-            queryEditText.setText("");
-//            // Android client
-            aiRequest.setQuery(msg);
-            RequestTask requestTask = new RequestTask(MainActivity.this, aiDataService, customAIServiceContext);
-            requestTask.execute(aiRequest);
-
-            // Java V2
-//            QueryInput queryInput = QueryInput.newBuilder().setText(TextInput.newBuilder().setText(msg).setLanguageCode("en-US")).build();
-//            new RequestJavaV2Task(MainActivity.this, session, sessionsClient, queryInput).execute();
-        }
+//        if (msg.trim().isEmpty()) {
+//            Toast.makeText(MainActivity.this, "Please enter your query!", Toast.LENGTH_LONG).show();
+//        } else {
+//            showTextView(msg, null, USER);
+//            queryEditText.setText("");
+////            // Android client
+//            aiRequest.setQuery(msg);
+//            RequestTask requestTask = new RequestTask(MainActivity.this, aiDataService, customAIServiceContext);
+//            requestTask.execute(aiRequest);
+//
+//            // Java V2
+////            QueryInput queryInput = QueryInput.newBuilder().setText(TextInput.newBuilder().setText(msg).setLanguageCode("en-US")).build();
+////            new RequestJavaV2Task(MainActivity.this, session, sessionsClient, queryInput).execute();
+//        }
+        sendMessage(msg);
     }
 
     public void callback(AIResponse aiResponse) {
@@ -176,7 +197,13 @@ public class MainActivity extends AppCompatActivity {
                     ResponseMessageObj responseMessageObj = new Gson().fromJson(responseStr, ResponseMessageObj.class);
                     Log.d(TAG, "Bot Reply: " + responseMessageObj.getSubtitle());
                     Log.d(TAG, "Img URL : " + responseMessageObj.getImageUrl());
-                    showTextView(responseMessageObj.getSubtitle(), responseMessageObj.getImageUrl(), BOT_IMAGE);
+                    //String speechMsg =
+                    if(!TextUtils.isEmpty(responseMessageObj.getSubtitle())) {
+                        showTextView(responseMessageObj.getSubtitle(), responseMessageObj.getImageUrl(), BOT_IMAGE);
+                    }else {
+                        String botReply = aiResponse.getResult().getFulfillment().getSpeech();
+                        showTextView(botReply, null, BOT);
+                    }
                 } else if(aiResponse.getResult().getMetadata().getIntentName().equalsIgnoreCase("navigate")){
                     String botReply = aiResponse.getResult().getFulfillment().getSpeech();
                     Log.d(TAG, "Resposne Message 2nd Obj : " + botReply);
@@ -236,10 +263,7 @@ public class MainActivity extends AppCompatActivity {
                 navigateButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Intent intent = new Intent(MainActivity.this, MapActivity.class);
-                        intent.putExtra("EVENT","NAVIGATE");
-                        intent.putExtra("ITEM_KEY",itemKey);
-                        startActivity(intent);
+                        startNavigation(itemKey);
                     }
                 });
                 break;
@@ -260,7 +284,37 @@ public class MainActivity extends AppCompatActivity {
                     .into(imageView);
         }
         layout.requestFocus();
-        queryEditText.requestFocus(); // change focus back to edit text to continue typing
+        queryEditText.requestFocus();
+        if(type != USER){
+            speakOut(message);
+        }
+
+
+        if(type == BOT_NAVIGATE){
+            waitAndNavigate(itemKey);
+        }
+    }
+
+    private void waitAndNavigate(String itemKey) {
+        //launch the next screen after delay
+        Handler handler = new Handler();
+        Runnable callback = new Runnable() {
+            @Override
+            public void run() {
+//                startActivity(new Intent(getApplicationContext(), MainActivity.class));
+//                finish();
+//                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                startNavigation(itemKey);
+            }
+        };
+        handler.postDelayed(callback, 2000);
+    }
+
+    private void startNavigation(String itemKey) {
+        Intent intent = new Intent(MainActivity.this, MapActivity.class);
+        intent.putExtra("EVENT","NAVIGATE");
+        intent.putExtra("ITEM_KEY",itemKey);
+        startActivity(intent);
     }
 
     FrameLayout getUserLayout() {
@@ -281,6 +335,76 @@ public class MainActivity extends AppCompatActivity {
     FrameLayout getBotNavigateLayout() {
         LayoutInflater inflater = LayoutInflater.from(MainActivity.this);
         return (FrameLayout) inflater.inflate(R.layout.bot_msg_navigate, null);
+    }
+
+    // Create an intent that can start the Speech Recognizer activity
+    private void displaySpeechRecognizer() {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+     // Start the activity, the intent will be populated with the speech text
+        startActivityForResult(intent, SPEECH_REQUEST_CODE);
+    }
+
+    // This callback is invoked when the Speech Recognizer returns.
+   // This is where you process the intent and extract the speech text from the intent.
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode,
+                                    Intent data) {
+        if (requestCode == SPEECH_REQUEST_CODE && resultCode == RESULT_OK) {
+            List<String> results = data.getStringArrayListExtra(
+                    RecognizerIntent.EXTRA_RESULTS);
+            String spokenText = results.get(0);
+            // Do something with spokenText
+            sendMessage(spokenText);
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void sendMessage(String msg){
+        if (msg.trim().isEmpty()) {
+            Toast.makeText(MainActivity.this, "Please enter your query!", Toast.LENGTH_LONG).show();
+        } else {
+            showTextView(msg, null, USER);
+            queryEditText.setText("");
+//            // Android client
+            aiRequest.setQuery(msg);
+            RequestTask requestTask = new RequestTask(MainActivity.this, aiDataService, customAIServiceContext);
+            requestTask.execute(aiRequest);
+
+            // Java V2
+//            QueryInput queryInput = QueryInput.newBuilder().setText(TextInput.newBuilder().setText(msg).setLanguageCode("en-US")).build();
+//            new RequestJavaV2Task(MainActivity.this, session, sessionsClient, queryInput).execute();
+        }
+    }
+
+    @Override
+    public void onInit(int status) {
+        if (status == TextToSpeech.SUCCESS) {
+
+            int result = textToSpeech.setLanguage(Locale.US);
+
+            if (result == TextToSpeech.LANG_MISSING_DATA
+                    || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                Log.e("TextToSpeak", "This Language is not supported");
+            }
+        } else {
+            Log.e("TextToSpeak", "Initialization Failed!");
+        }
+    }
+
+    private void speakOut(String messageStr) {
+        textToSpeech.speak(messageStr, TextToSpeech.QUEUE_FLUSH, null);
+    }
+
+    @Override
+    protected void onDestroy() {
+        // Don't forget to shutdown tts!
+        if (textToSpeech != null) {
+            textToSpeech.stop();
+            textToSpeech.shutdown();
+        }
+        super.onDestroy();
     }
 }
 
