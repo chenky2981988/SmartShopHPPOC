@@ -255,7 +255,8 @@ public class MapViewFragment extends Fragment implements MapView.DirectionsEvent
                 Log.d("TAG","placemark Name : " + placemark.getName());
                 if (placemark.getName().toLowerCase().contains(itemKey.toLowerCase())) {
                     PointF pointF = new PointF();
-                    pointF.set(1150.0f, 3000.0f);
+                    //pointF.set(1150.0f, 3000.0f); //Near Door beacon
+                    pointF.set(300.0f, 300.0f); // Upper left route point
                     directionsSource = DirectionsSource.forMapPoint(EditorKey.forMap(BuildConfig.ArubaMapKey, BuildConfig.ArubaAppKey), pointF);
                     Log.d("TAG", "PlaceMark Key : " + placemark.getKey());
                     directionsDestination = DirectionsDestination.forPlacemarkKey(placemark.getKey());
