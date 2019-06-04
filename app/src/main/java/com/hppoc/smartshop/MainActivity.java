@@ -394,7 +394,9 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     }
 
     private void speakOut(String messageStr) {
-        textToSpeech.speak(messageStr, TextToSpeech.QUEUE_FLUSH, null);
+       // textToSpeech.speak(messageStr, TextToSpeech.QUEUE_FLUSH, null);
+        textToSpeech.setSpeechRate(0.8f);
+        textToSpeech.speak(messageStr, TextToSpeech.QUEUE_FLUSH, null,null);
     }
 
     @Override
