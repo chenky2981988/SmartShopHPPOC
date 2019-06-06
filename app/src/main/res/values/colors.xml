@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimary">#F8EDFB</color>
+    <color name="actionabar_title_text_color">#860864</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
     <color name="cg_blue_light">#80b8d6</color>
-    <color name="vibrant_blue_dark">#12abdb</color>
+    <color name="vibrant_blue_dark">#12ABDB</color>
     <color name="vibrant_blue_light">#88d5ed</color>
     <color name="purple">#7e39ba</color>
+    <color name="user_msg_color">#EBEBEB</color>
+    <color name="bot_msg_bubble_border">#00AEEF</color>
+    <color name="navigate_text_color">#9A34B4</color>
 </resources>

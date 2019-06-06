@@ -2,7 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/mr_white">
 
 
     <RelativeLayout
@@ -31,7 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_toStartOf="@+id/voiceBtn"
             android:paddingTop="4dp"
-            app:srcCompat="@drawable/chatbot_send_btn" />
+            app:srcCompat="@drawable/arrow" />
 
         <EditText
             android:id="@+id/queryEditText"
@@ -42,7 +43,8 @@
             android:imeOptions="actionSend"
             android:inputType="text"
             android:paddingTop="4dp"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            android:backgroundTint="@color/bot_msg_bubble_border"/>
 
         <ImageView
             android:id="@+id/mapBtn"

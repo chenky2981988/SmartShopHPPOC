@@ -9,37 +9,50 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="start|center_vertical"
-        android:layout_marginTop="4dp"
-        android:layout_marginBottom="4dp"
-        android:layout_marginEnd="16dp"
         android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="4dp"
         android:background="@drawable/bot_bg_bubble"
         android:gravity="start|center_vertical"
         android:orientation="vertical">
 
         <com.arubanetworks.meridian.maps.MapView
             android:id="@+id/mapview"
-            android:importantForAccessibility="yes"
             android:layout_width="250dp"
             android:layout_height="250dp"
-            android:layout_margin="5dp" />
+            android:layout_margin="5dp"
+            android:importantForAccessibility="yes" />
 
-        <Button
-            android:id="@+id/navigateButton"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/navigateLayout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:padding="12dp"
-            android:text="Navigate ->"
-            android:textSize="18sp" />
-        <TextView
-            android:id="@+id/chatMsg"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:padding="12dp"
-            android:textSize="18sp"
-            android:visibility="gone"/>
+            android:orientation="horizontal"
+            android:layout_marginTop="5dp">
+
+            <TextView
+                android:id="@+id/chatMsg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="12dp"
+                android:paddingTop="12dp"
+                android:paddingBottom="12dp"
+                android:paddingEnd="8dp"
+                android:textSize="20sp"
+                android:text="Navigate"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:textColor="@color/navigate_text_color"/>
+
+            <ImageView
+                android:id="@+id/navigateButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/navigate"
+                android:layout_gravity="center"
+                android:textSize="18sp" />
+        </LinearLayout>
 
         <FrameLayout
             android:id="@+id/container"

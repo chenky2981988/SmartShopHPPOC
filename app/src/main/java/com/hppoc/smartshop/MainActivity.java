@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
+import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -81,6 +82,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        getSupportActionBar().setTitle(Html.fromHtml("<font color='#860864'><b>Capgemini SmartShop</b></font>"));
 
         final ScrollView scrollview = findViewById(R.id.chatScrollView);
         scrollview.post(() -> scrollview.fullScroll(ScrollView.FOCUS_DOWN));
@@ -334,8 +336,8 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 mapOptions.HIDE_LOCATION_BUTTON = true;
                 mapView.setOptions(mapOptions);
 
-                Button navigateButton = layout.findViewById(R.id.navigateButton);
-                navigateButton.setOnClickListener(new View.OnClickListener() {
+                LinearLayout navigateLayout = layout.findViewById(R.id.navigateLayout);
+                navigateLayout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         startNavigation(itemKey);
@@ -366,6 +368,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
 
         if (type == BOT_NAVIGATE) {
+            tv.setText("Navigate");
             waitAndNavigate(itemKey);
         }
     }
