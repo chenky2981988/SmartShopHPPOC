@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     private LinearLayout chatLayout;
     private EditText queryEditText;
     private ImageView mapButton;
-    private AIButton voiceButton;
+    private ImageView voiceButton;
 
     // Android client
     private AIRequest aiRequest;
@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         ImageView sendBtn = findViewById(R.id.sendBtn);
         sendBtn.setOnClickListener(this::sendMessage);
 
-        voiceButton = (AIButton) findViewById(R.id.voiceBtn);
+        voiceButton = (ImageView) findViewById(R.id.voiceBtn);
         voiceButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
