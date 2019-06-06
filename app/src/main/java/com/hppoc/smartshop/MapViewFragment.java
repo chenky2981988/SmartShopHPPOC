@@ -69,11 +69,11 @@ public class MapViewFragment extends Fragment implements MapView.DirectionsEvent
         // Set map options if desired
         MapOptions mapOptions = mapView.getOptions();
         mapOptions.HIDE_MAP_LABEL = true;
-        // mapOptions.HIDE_DIRECTIONS_CONTROLS = true;
-//        mapOptions.HIDE_OVERVIEW_BUTTON = true;
-        //mapOptions.HIDE_ACCESSIBILITY_BUTTON = true;
+        mapOptions.HIDE_DIRECTIONS_CONTROLS = true;
+        //mapOptions.HIDE_OVERVIEW_BUTTON = true;
+        mapOptions.HIDE_ACCESSIBILITY_BUTTON = true;
         mapOptions.HIDE_LEVELS_CONTROL = true;
-        //mapOptions.HIDE_LOCATION_BUTTON = true;
+        mapOptions.HIDE_LOCATION_BUTTON = true;
         mapView.setOptions(mapOptions);
 
         // If you want to load a map other than the default one
@@ -255,18 +255,19 @@ public class MapViewFragment extends Fragment implements MapView.DirectionsEvent
                 Log.d("TAG","placemark Name : " + placemark.getName());
                 if (placemark.getName().toLowerCase().contains(itemKey.toLowerCase())) {
                     PointF pointF = new PointF();
-                    pointF.set(1150.0f, 3000.0f);
+                    //pointF.set(1150.0f, 3000.0f); //Near Door beacon
+                    pointF.set(300.0f, 300.0f); // Upper left route point
                     directionsSource = DirectionsSource.forMapPoint(EditorKey.forMap(BuildConfig.ArubaMapKey, BuildConfig.ArubaAppKey), pointF);
                     Log.d("TAG", "PlaceMark Key : " + placemark.getKey());
                     directionsDestination = DirectionsDestination.forPlacemarkKey(placemark.getKey());
                     //directionsDestination = DirectionsDestination.
                     MapOptions mapOptions = mapView.getOptions();
-                    //mapOptions.HIDE_MAP_LABEL = true;
-                    //mapOptions.HIDE_DIRECTIONS_CONTROLS = true;
-                    // mapOptions.HIDE_OVERVIEW_BUTTON = true;
-                    mapOptions.HIDE_ACCESSIBILITY_BUTTON = true;
-                    // mapOptions.HIDE_LEVELS_CONTROL = true;
-                    mapOptions.HIDE_LOCATION_BUTTON = true;
+//                    //mapOptions.HIDE_MAP_LABEL = true;
+//                    mapOptions.HIDE_DIRECTIONS_CONTROLS = true;
+//                    // mapOptions.HIDE_OVERVIEW_BUTTON = true;
+//                    mapOptions.HIDE_ACCESSIBILITY_BUTTON = true;
+//                    // mapOptions.HIDE_LEVELS_CONTROL = true;
+//                    mapOptions.HIDE_LOCATION_BUTTON = true;
 
                     MapFragment mapDirFragment = new MapFragment.Builder()
                             .setAppKey(mapView.getAppKey())
