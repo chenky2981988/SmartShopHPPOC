@@ -26,9 +26,11 @@ import com.google.api.gax.core.FixedCredentialsProvider;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.auth.oauth2.ServiceAccountCredentials;
 import com.google.cloud.dialogflow.v2beta1.DetectIntentResponse;
+import com.google.cloud.dialogflow.v2beta1.QueryInput;
 import com.google.cloud.dialogflow.v2beta1.SessionName;
 import com.google.cloud.dialogflow.v2beta1.SessionsClient;
 import com.google.cloud.dialogflow.v2beta1.SessionsSettings;
+import com.google.cloud.dialogflow.v2beta1.TextInput;
 import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
@@ -117,17 +119,17 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, MapActivity.class);
-                intent.putExtra("EVENT","SHOW_MAP");
+                intent.putExtra("EVENT", "SHOW_MAP");
                 startActivity(intent);
             }
         });
 
 
         // Android client
-        initChatbot();
+        //   initChatbot();
 
         // Java V2
-        //  initV2Chatbot();
+        initV2Chatbot();
     }
 
     private void initChatbot() {
@@ -160,21 +162,21 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     private void sendMessage(View view) {
         String msg = queryEditText.getText().toString();
-//        if (msg.trim().isEmpty()) {
-//            Toast.makeText(MainActivity.this, "Please enter your query!", Toast.LENGTH_LONG).show();
-//        } else {
-//            showTextView(msg, null, USER);
-//            queryEditText.setText("");
+        if (msg.trim().isEmpty()) {
+            Toast.makeText(MainActivity.this, "Please enter your query!", Toast.LENGTH_LONG).show();
+        } else {
+            showTextView(msg, null, USER);
+            queryEditText.setText("");
 ////            // Android client
 //            aiRequest.setQuery(msg);
 //            RequestTask requestTask = new RequestTask(MainActivity.this, aiDataService, customAIServiceContext);
 //            requestTask.execute(aiRequest);
 //
 //            // Java V2
-////            QueryInput queryInput = QueryInput.newBuilder().setText(TextInput.newBuilder().setText(msg).setLanguageCode("en-US")).build();
-////            new RequestJavaV2Task(MainActivity.this, session, sessionsClient, queryInput).execute();
-//        }
-        sendMessage(msg);
+            QueryInput queryInput = QueryInput.newBuilder().setText(TextInput.newBuilder().setText(msg).setLanguageCode("en-US")).build();
+            new RequestJavaV2Task(MainActivity.this, session, sessionsClient, queryInput).execute();
+        }
+        //sendMessage(msg);
     }
 
     public void callback(AIResponse aiResponse) {
@@ -183,11 +185,10 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             // Log.d(TAG,"Response MessageSize : " + aiResponse.getResult().getFulfillment());
             if (aiResponse.getStatus().getCode() == 200) {
                 Log.d(TAG, "Intent Name : " + aiResponse.getResult().getMetadata().getIntentName());
-                if(aiResponse.getResult().getMetadata().getIntentName().equalsIgnoreCase("FindThings") && aiResponse.getResult().getFulfillment().getMessages().size() > 1)
-                {
-                    if(aiResponse.getResult().getParameters().containsKey("item")) {
+                if (aiResponse.getResult().getMetadata().getIntentName().equalsIgnoreCase("FindThings") && aiResponse.getResult().getFulfillment().getMessages().size() > 1) {
+                    if (aiResponse.getResult().getParameters().containsKey("item")) {
                         itemKey = aiResponse.getResult().getParameters().get("item").getAsString();
-                        Log.d(TAG,"itemKey : " + itemKey);
+                        Log.d(TAG, "itemKey : " + itemKey);
                     }
                     Log.d(TAG, "Messages Size : " + aiResponse.getResult().getFulfillment().getMessages().size());
                     ResponseMessage responseMessage = aiResponse.getResult().getFulfillment().getMessages().get(1);
@@ -198,17 +199,17 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                     Log.d(TAG, "Bot Reply: " + responseMessageObj.getSubtitle());
                     Log.d(TAG, "Img URL : " + responseMessageObj.getImageUrl());
                     //String speechMsg =
-                    if(!TextUtils.isEmpty(responseMessageObj.getSubtitle())) {
+                    if (!TextUtils.isEmpty(responseMessageObj.getSubtitle())) {
                         showTextView(responseMessageObj.getSubtitle(), responseMessageObj.getImageUrl(), BOT_IMAGE);
-                    }else {
+                    } else {
                         String botReply = aiResponse.getResult().getFulfillment().getSpeech();
                         showTextView(botReply, null, BOT);
                     }
-                } else if(aiResponse.getResult().getMetadata().getIntentName().equalsIgnoreCase("navigate")){
+                } else if (aiResponse.getResult().getMetadata().getIntentName().equalsIgnoreCase("navigate")) {
                     String botReply = aiResponse.getResult().getFulfillment().getSpeech();
                     Log.d(TAG, "Resposne Message 2nd Obj : " + botReply);
                     showTextView(botReply, null, BOT_NAVIGATE);
-                }else {
+                } else {
                     String botReply = aiResponse.getResult().getFulfillment().getSpeech();
                     Log.d(TAG, "Resposne Message 2nd Obj : " + botReply);
                     showTextView(botReply, null, BOT);
@@ -224,13 +225,87 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     public void callbackV2(DetectIntentResponse response) {
         if (response != null) {
             // process aiResponse here
-            String botReply = response.getQueryResult().getFulfillmentText();
-            Log.d(TAG, "V2 Bot Reply: " + botReply);
-            showTextView(botReply, null, BOT);
+            if (response.getQueryResult().getFulfillmentMessagesCount() >= 1) {
+                if (response.getQueryResult().getIntent().getDisplayName().equalsIgnoreCase("FindThings")) {
+                    com.google.cloud.dialogflow.v2beta1.Intent.Message message = response.getQueryResult().getFulfillmentMessagesList().get(1);
+                    String subTitle = message.getCard().getSubtitle();
+                    String imageUri = message.getCard().getImageUri();
+                    Log.d(TAG, "subTitle : " + subTitle);
+                    Log.d(TAG, "imageUri : " + imageUri);
+                    if(response.getQueryResult().getParameters().getFieldsMap().get("item") != null) {
+                        itemKey = response.getQueryResult().getParameters().getFieldsMap().get("item").getStringValue();
+                        Log.d(TAG, "itemKey : " + response.getQueryResult().getParameters().getFieldsMap().get("item").getStringValue());
+                    }
+                    if (!TextUtils.isEmpty(subTitle)) {
+                        showTextView(subTitle, imageUri, BOT_IMAGE);
+                    } else {
+                        String botReply = response.getQueryResult().getFulfillmentText();
+                        if (TextUtils.isEmpty(botReply)) {
+                            botReply = "Sorry, Command not supported!";
+                        }
+                        showTextView(botReply, null, BOT);
+                    }
+                } else if (response.getQueryResult().getIntent().getDisplayName().equalsIgnoreCase("navigate")) {
+                    String botReply = response.getQueryResult().getFulfillmentText();
+                    Log.d(TAG, "V2 Bot Reply: " + botReply);
+                    showTextView(botReply, null, BOT_NAVIGATE);
+                }else {
+                    String botReply = response.getQueryResult().getFulfillmentText();
+                    Log.d(TAG, "Resposne Message 2nd Obj : " + botReply);
+                    showTextView(botReply, null, BOT);
+                }
+            }
+
+//            String botReply = response.getQueryResult().getFulfillmentText();
+//            Log.d(TAG, "V2 Bot Reply: " + botReply);
+//            showTextView(botReply, null, BOT);
         } else {
             Log.d(TAG, "Bot Reply: Null");
             showTextView("There was some communication issue. Please Try again!", null, BOT);
         }
+
+
+//        if (aiResponse != null) {
+//            // process aiResponse here
+//            // Log.d(TAG,"Response MessageSize : " + aiResponse.getResult().getFulfillment());
+//            if (aiResponse.getStatus().getCode() == 200) {
+//                Log.d(TAG, "Intent Name : " + aiResponse.getResult().getMetadata().getIntentName());
+//                if(aiResponse.getResult().getMetadata().getIntentName().equalsIgnoreCase("FindThings") && aiResponse.getResult().getFulfillment().getMessages().size() > 1)
+//                {
+//                    if(aiResponse.getResult().getParameters().containsKey("item")) {
+//                        itemKey = aiResponse.getResult().getParameters().get("item").getAsString();
+//                        Log.d(TAG,"itemKey : " + itemKey);
+//                    }
+//                    Log.d(TAG, "Messages Size : " + aiResponse.getResult().getFulfillment().getMessages().size());
+//                    ResponseMessage responseMessage = aiResponse.getResult().getFulfillment().getMessages().get(1);
+//                    String responseStr = new Gson().toJson(responseMessage).toString();
+//                    Log.d(TAG, "Json String : " + responseStr);
+//
+//                    ResponseMessageObj responseMessageObj = new Gson().fromJson(responseStr, ResponseMessageObj.class);
+//                    Log.d(TAG, "Bot Reply: " + responseMessageObj.getSubtitle());
+//                    Log.d(TAG, "Img URL : " + responseMessageObj.getImageUrl());
+//                    //String speechMsg =
+//                    if(!TextUtils.isEmpty(responseMessageObj.getSubtitle())) {
+//                        showTextView(responseMessageObj.getSubtitle(), responseMessageObj.getImageUrl(), BOT_IMAGE);
+//                    }else {
+//                        String botReply = aiResponse.getResult().getFulfillment().getSpeech();
+//                        showTextView(botReply, null, BOT);
+//                    }
+//                } else if(aiResponse.getResult().getMetadata().getIntentName().equalsIgnoreCase("navigate")){
+//                    String botReply = aiResponse.getResult().getFulfillment().getSpeech();
+//                    Log.d(TAG, "Resposne Message 2nd Obj : " + botReply);
+//                    showTextView(botReply, null, BOT_NAVIGATE);
+//                }else {
+//                    String botReply = aiResponse.getResult().getFulfillment().getSpeech();
+//                    Log.d(TAG, "Resposne Message 2nd Obj : " + botReply);
+//                    showTextView(botReply, null, BOT);
+//                }
+//
+//            }
+//        } else {
+//            Log.d(TAG, "Bot Reply: Null");
+//            showTextView("There was some communication issue. Please Try again!", null, BOT);
+//        }
     }
 
     private void showTextView(String message, String imgUrl, int type) {
@@ -285,12 +360,12 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         }
         layout.requestFocus();
         queryEditText.requestFocus();
-        if(type != USER){
+        if (type != USER) {
             speakOut(message);
         }
 
 
-        if(type == BOT_NAVIGATE){
+        if (type == BOT_NAVIGATE) {
             waitAndNavigate(itemKey);
         }
     }
@@ -312,8 +387,8 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     private void startNavigation(String itemKey) {
         Intent intent = new Intent(MainActivity.this, MapActivity.class);
-        intent.putExtra("EVENT","NAVIGATE");
-        intent.putExtra("ITEM_KEY",itemKey);
+        intent.putExtra("EVENT", "NAVIGATE");
+        intent.putExtra("ITEM_KEY", itemKey);
         startActivity(intent);
     }
 
@@ -342,12 +417,12 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
                 RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-     // Start the activity, the intent will be populated with the speech text
+        // Start the activity, the intent will be populated with the speech text
         startActivityForResult(intent, SPEECH_REQUEST_CODE);
     }
 
     // This callback is invoked when the Speech Recognizer returns.
-   // This is where you process the intent and extract the speech text from the intent.
+    // This is where you process the intent and extract the speech text from the intent.
     @Override
     protected void onActivityResult(int requestCode, int resultCode,
                                     Intent data) {
@@ -361,20 +436,20 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    private void sendMessage(String msg){
+    private void sendMessage(String msg) {
         if (msg.trim().isEmpty()) {
             Toast.makeText(MainActivity.this, "Please enter your query!", Toast.LENGTH_LONG).show();
         } else {
             showTextView(msg, null, USER);
             queryEditText.setText("");
 //            // Android client
-            aiRequest.setQuery(msg);
-            RequestTask requestTask = new RequestTask(MainActivity.this, aiDataService, customAIServiceContext);
-            requestTask.execute(aiRequest);
+//            aiRequest.setQuery(msg);
+//            RequestTask requestTask = new RequestTask(MainActivity.this, aiDataService, customAIServiceContext);
+//            requestTask.execute(aiRequest);
 
             // Java V2
-//            QueryInput queryInput = QueryInput.newBuilder().setText(TextInput.newBuilder().setText(msg).setLanguageCode("en-US")).build();
-//            new RequestJavaV2Task(MainActivity.this, session, sessionsClient, queryInput).execute();
+            QueryInput queryInput = QueryInput.newBuilder().setText(TextInput.newBuilder().setText(msg).setLanguageCode("en-US")).build();
+            new RequestJavaV2Task(MainActivity.this, session, sessionsClient, queryInput).execute();
         }
     }
 
@@ -394,9 +469,9 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     }
 
     private void speakOut(String messageStr) {
-       // textToSpeech.speak(messageStr, TextToSpeech.QUEUE_FLUSH, null);
+        // textToSpeech.speak(messageStr, TextToSpeech.QUEUE_FLUSH, null);
         textToSpeech.setSpeechRate(0.8f);
-        textToSpeech.speak(messageStr, TextToSpeech.QUEUE_FLUSH, null,null);
+        textToSpeech.speak(messageStr, TextToSpeech.QUEUE_FLUSH, null, null);
     }
 
     @Override
