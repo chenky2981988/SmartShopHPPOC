@@ -227,7 +227,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     public void callbackV2(DetectIntentResponse response) {
         if (response != null) {
             // process aiResponse here
-            if (response.getQueryResult().getFulfillmentMessagesCount() >= 1) {
+            if (response.getQueryResult().getFulfillmentMessagesCount() > 2) {
                 if (response.getQueryResult().getIntent().getDisplayName().equalsIgnoreCase("FindThings")) {
                     com.google.cloud.dialogflow.v2beta1.Intent.Message message = response.getQueryResult().getFulfillmentMessagesList().get(1);
                     String subTitle = message.getCard().getSubtitle();
@@ -250,7 +250,30 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 } else if (response.getQueryResult().getIntent().getDisplayName().equalsIgnoreCase("navigate")) {
                     String botReply = response.getQueryResult().getFulfillmentText();
                     Log.d(TAG, "V2 Bot Reply: " + botReply);
-                    showTextView(botReply, null, BOT_NAVIGATE);
+                    if(!TextUtils.isEmpty(itemKey)) {
+                        showTextView(botReply, null, BOT_NAVIGATE);
+                    }else {
+                        showTextView(botReply, null, BOT);
+                    }
+                }else {
+                    String botReply = response.getQueryResult().getFulfillmentText();
+                    Log.d(TAG, "Resposne Message 2nd Obj : " + botReply);
+                    showTextView(botReply, null, BOT);
+                }
+            }else if (response.getQueryResult().getFulfillmentMessagesCount() == 2){
+                com.google.cloud.dialogflow.v2beta1.Intent.Message message = response.getQueryResult().getFulfillmentMessagesList().get(1);
+                String botReply = message.getText().getText(0);
+                Log.d(TAG,"Display Text : " + botReply);
+                showTextView(botReply, null, BOT);
+            }else {
+                if (response.getQueryResult().getIntent().getDisplayName().equalsIgnoreCase("navigate")) {
+                    String botReply = response.getQueryResult().getFulfillmentText();
+                    Log.d(TAG, "V2 Bot Reply: " + botReply);
+                    if (!TextUtils.isEmpty(itemKey)) {
+                        showTextView(botReply, null, BOT_NAVIGATE);
+                    } else {
+                        showTextView(botReply, null, BOT);
+                    }
                 }else {
                     String botReply = response.getQueryResult().getFulfillmentText();
                     Log.d(TAG, "Resposne Message 2nd Obj : " + botReply);
@@ -388,11 +411,12 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         handler.postDelayed(callback, 2000);
     }
 
-    private void startNavigation(String itemKey) {
+    private void startNavigation(String itemKeyText) {
         Intent intent = new Intent(MainActivity.this, MapActivity.class);
         intent.putExtra("EVENT", "NAVIGATE");
         intent.putExtra("ITEM_KEY", itemKey);
         startActivity(intent);
+        itemKey = "";
     }
 
     FrameLayout getUserLayout() {
