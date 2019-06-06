@@ -69,8 +69,8 @@ public class MapViewFragment extends Fragment implements MapView.DirectionsEvent
         // Set map options if desired
         MapOptions mapOptions = mapView.getOptions();
         mapOptions.HIDE_MAP_LABEL = true;
-        mapOptions.HIDE_DIRECTIONS_CONTROLS = true;
-        //mapOptions.HIDE_OVERVIEW_BUTTON = true;
+        //mapOptions.HIDE_DIRECTIONS_CONTROLS = true;
+        mapOptions.HIDE_OVERVIEW_BUTTON = true;
         mapOptions.HIDE_ACCESSIBILITY_BUTTON = true;
         mapOptions.HIDE_LEVELS_CONTROL = true;
         mapOptions.HIDE_LOCATION_BUTTON = true;
