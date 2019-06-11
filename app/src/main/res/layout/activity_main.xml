@@ -5,6 +5,39 @@
     android:layout_height="match_parent"
     android:background="@color/mr_white">
 
+    <!--    <android.support.v7.widget.Toolbar
+            android:id = "@+id/my_awesome_toolbar"
+            android:layout_width = "match_parent"
+            android:layout_height = "wrap_content"
+            android:background = "@color"
+            android:minHeight = "?attr/actionBarSize" >
+            <TextView
+                android:id = "@+id/toolbarTitle"
+                style = "@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
+                android:background = "?attr/selectableItemBackground"
+                android:layout_width = "wrap_content"
+                android:gravity = "center_vertical"
+                android:layout_height = "match_parent" />
+        </android.support.v7.widget.Toolbar>-->
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/my_awesome_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:minHeight="?attr/actionBarSize">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/toolbarTitle"
+            style="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="Capgemini SmartShop"
+            android:textColor="@color/actionabar_title_text_color"
+            android:textStyle="bold" />
+
+    </androidx.appcompat.widget.Toolbar>
 
     <RelativeLayout
         android:id="@+id/inputLayout"
@@ -13,10 +46,10 @@
         android:layout_alignParentBottom="true"
         android:background="@android:color/white"
         android:gravity="bottom"
-        android:paddingBottom="9dp"
-        android:paddingEnd="8dp"
         android:paddingStart="8dp"
-        android:paddingTop="8dp">
+        android:paddingTop="8dp"
+        android:paddingEnd="8dp"
+        android:paddingBottom="9dp">
 
         <!--<ai.api.ui.AIButton
             android:id="@+id/micButton"
@@ -40,28 +73,28 @@
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_toStartOf="@+id/sendBtn"
+            android:backgroundTint="@color/bot_msg_bubble_border"
             android:imeOptions="actionSend"
             android:inputType="text"
             android:paddingTop="4dp"
-            android:textSize="18sp"
-            android:backgroundTint="@color/bot_msg_bubble_border"/>
+            android:textSize="18sp" />
 
         <ImageView
             android:id="@+id/mapBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
             android:layout_alignParentEnd="true"
-            android:visibility="gone"
-            android:src="@android:drawable/ic_dialog_map"/>
+            android:layout_centerInParent="true"
+            android:src="@android:drawable/ic_dialog_map"
+            android:visibility="gone" />
 
         <ImageView
             android:id="@+id/voiceBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
             android:layout_alignParentEnd="true"
-            android:src="@drawable/google_assistant"/>
+            android:layout_centerInParent="true"
+            android:src="@drawable/google_assistant" />
 
         <!--<ai.api.ui.AIButton
             android:id="@+id/voiceBtn"
@@ -77,13 +110,16 @@
     <ScrollView
         android:id="@+id/chatScrollView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/inputLayout">
+        android:layout_height="match_parent"
+        android:layout_above="@+id/inputLayout"
+        android:layout_below="@+id/my_awesome_toolbar"
+        android:fillViewport="true">
 
         <LinearLayout
             android:id="@+id/chatLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:fillViewport="true"
             android:orientation="vertical"></LinearLayout>
 
 

@@ -5,13 +5,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
-import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -47,8 +45,8 @@ import ai.api.android.AIDataService;
 import ai.api.model.AIRequest;
 import ai.api.model.AIResponse;
 import ai.api.model.ResponseMessage;
-import ai.api.ui.AIButton;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 public class MainActivity extends AppCompatActivity implements TextToSpeech.OnInitListener {
 
@@ -76,24 +74,52 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     private static final int SPEECH_REQUEST_CODE = 0;
     private TextToSpeech textToSpeech;
-
+    private int count = 0;
+    private long startMillis = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //getSupportActionBar().hide();
         setContentView(R.layout.activity_main);
-        getSupportActionBar().setTitle(Html.fromHtml("<font color='#860864'><b>Capgemini SmartShop</b></font>"));
+        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
+        TextView toolbarTitle = (TextView) findViewById(R.id.toolbarTitle);
+        toolbarTitle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                long time = System.currentTimeMillis();
+
+
+                //if it is the first time, or if it has been more than 3 seconds since the first tap ( so it is like a new try), we reset everything
+                if (startMillis == 0 || (time - startMillis > 3000)) {
+                    startMillis = time;
+                    count = 1;
+                }
+                //it is not the first, and it has been  less than 3 seconds since the first
+                else { //  time-startMillis< 3000
+                    count++;
+                }
+
+                if (count == 5) {
+                    Intent intent = new Intent(MainActivity.this, AboutActivity.class);
+                    startActivity(intent);
+                }
+            }
+        });
 
         final ScrollView scrollview = findViewById(R.id.chatScrollView);
         scrollview.post(() -> scrollview.fullScroll(ScrollView.FOCUS_DOWN));
 
         chatLayout = findViewById(R.id.chatLayout);
+
         mapButton = findViewById(R.id.mapBtn);
 
         ImageView sendBtn = findViewById(R.id.sendBtn);
         sendBtn.setOnClickListener(this::sendMessage);
 
-        voiceButton = (ImageView) findViewById(R.id.voiceBtn);
+        voiceButton = (ImageView)
+
+                findViewById(R.id.voiceBtn);
         voiceButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -101,10 +127,16 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             }
         });
 
-        textToSpeech = new TextToSpeech(this, this);
+        textToSpeech = new
 
-        queryEditText = findViewById(R.id.queryEditText);
-        queryEditText.setOnKeyListener((view, keyCode, event) -> {
+                TextToSpeech(this, this);
+
+        queryEditText =
+
+                findViewById(R.id.queryEditText);
+        queryEditText.setOnKeyListener((view, keyCode, event) ->
+
+        {
             if (event.getAction() == KeyEvent.ACTION_DOWN) {
                 switch (keyCode) {
                     case KeyEvent.KEYCODE_DPAD_CENTER:
@@ -132,6 +164,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
         // Java V2
         initV2Chatbot();
+
     }
 
     private void initChatbot() {
@@ -234,7 +267,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                     String imageUri = message.getCard().getImageUri();
                     Log.d(TAG, "subTitle : " + subTitle);
                     Log.d(TAG, "imageUri : " + imageUri);
-                    if(response.getQueryResult().getParameters().getFieldsMap().get("item") != null) {
+                    if (response.getQueryResult().getParameters().getFieldsMap().get("item") != null) {
                         itemKey = response.getQueryResult().getParameters().getFieldsMap().get("item").getStringValue();
                         Log.d(TAG, "itemKey : " + response.getQueryResult().getParameters().getFieldsMap().get("item").getStringValue());
                     }
@@ -250,22 +283,22 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 } else if (response.getQueryResult().getIntent().getDisplayName().equalsIgnoreCase("navigate")) {
                     String botReply = response.getQueryResult().getFulfillmentText();
                     Log.d(TAG, "V2 Bot Reply: " + botReply);
-                    if(!TextUtils.isEmpty(itemKey)) {
+                    if (!TextUtils.isEmpty(itemKey)) {
                         showTextView(botReply, null, BOT_NAVIGATE);
-                    }else {
+                    } else {
                         showTextView(botReply, null, BOT);
                     }
-                }else {
+                } else {
                     String botReply = response.getQueryResult().getFulfillmentText();
                     Log.d(TAG, "Resposne Message 2nd Obj : " + botReply);
                     showTextView(botReply, null, BOT);
                 }
-            }else if (response.getQueryResult().getFulfillmentMessagesCount() == 2){
+            } else if (response.getQueryResult().getFulfillmentMessagesCount() == 2) {
                 com.google.cloud.dialogflow.v2beta1.Intent.Message message = response.getQueryResult().getFulfillmentMessagesList().get(1);
                 String botReply = message.getText().getText(0);
-                Log.d(TAG,"Display Text : " + botReply);
+                Log.d(TAG, "Display Text : " + botReply);
                 showTextView(botReply, null, BOT);
-            }else {
+            } else {
                 if (response.getQueryResult().getIntent().getDisplayName().equalsIgnoreCase("navigate")) {
                     String botReply = response.getQueryResult().getFulfillmentText();
                     Log.d(TAG, "V2 Bot Reply: " + botReply);
@@ -274,7 +307,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                     } else {
                         showTextView(botReply, null, BOT);
                     }
-                }else {
+                } else {
                     String botReply = response.getQueryResult().getFulfillmentText();
                     Log.d(TAG, "Resposne Message 2nd Obj : " + botReply);
                     showTextView(botReply, null, BOT);

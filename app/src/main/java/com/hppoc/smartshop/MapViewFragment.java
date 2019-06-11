@@ -272,7 +272,7 @@ public class MapViewFragment extends Fragment implements MapView.DirectionsEvent
                     MapFragment mapDirFragment = new MapFragment.Builder()
                             .setAppKey(mapView.getAppKey())
                             .setMapKey(mapView.getMapKey())
-                            .setSource(directionsSource)
+                            .setSource(directionsSource) // Comment this line to enable live navigation/tracking
                             .setMapOptions(mapOptions)
                             .setDestination(directionsDestination)
                             .build();

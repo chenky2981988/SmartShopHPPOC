@@ -20,7 +20,7 @@ public class MapActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
         getSupportActionBar().setTitle(Html.fromHtml("<font color='#860864'><b>Capgemini SmartShop</b></font>"));
-//        Toolbar toolbar = findViewById(R.id.toolbar);
+//        Toolbar toolbar = findViewById(R.id.toolbar)
 //        setSupportActionBar(toolbar);
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
