@@ -276,6 +276,43 @@ public class MapViewFragment extends Fragment implements MapView.DirectionsEvent
                             .setMapOptions(mapOptions)
                             .setDestination(directionsDestination)
                             .build();
+                    mapDirFragment.setDirectionsEventListener(new MapView.DirectionsEventListener() {
+                        @Override
+                        public boolean onDirectionsClick(Marker marker) {
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onRouteStepIndexChange(int i) {
+                            return false;
+                        }
+
+                        @Override
+                        public void onDirectionsReroute() {
+                        }
+
+                        @Override
+                        public boolean onDirectionsError(Throwable throwable) {
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onDirectionsStart() {
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onDirectionsClosed() {
+                            Log.d("TAG","Direction closed - End Route closed!");
+                            endRoute(mapDirFragment);
+                            return false;
+                        }
+
+                        @Override
+                        public void onUseAccessiblePathsChange() {
+
+                        }
+                    });
 
                     getActivity().getSupportFragmentManager()
                             .beginTransaction()
@@ -288,5 +325,15 @@ public class MapViewFragment extends Fragment implements MapView.DirectionsEvent
 
 
         }
+    }
+
+    private void endRoute(MapFragment mapFragment){
+        //Finish Activity
+        if(mapFragment != null && mapFragment.getActivity() != null && !mapFragment.getActivity().isDestroyed() && !mapFragment.getActivity().isFinishing()){
+            mapFragment.getActivity().finish();
+        }else {
+            Log.e("TAG","Error in closing MapActivity");
+        }
+
     }
 }
